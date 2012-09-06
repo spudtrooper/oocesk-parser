@@ -1,0 +1,5 @@
+class Foo extends Object {
+ def main() {
+  print(1);
+ }
+}

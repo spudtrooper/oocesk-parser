@@ -1,0 +1,5 @@
+class Foo extends Object {
+ def foo($a) {}
+ def boo($a, $b) {}
+ def coo($a, $b, $c) {}
+}

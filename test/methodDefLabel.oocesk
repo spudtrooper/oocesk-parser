@@ -1,0 +1,5 @@
+class Foo extends Object {
+ def foo() {
+   label theLabel:
+ }
+}

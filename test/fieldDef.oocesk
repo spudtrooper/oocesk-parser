@@ -1,0 +1,5 @@
+class Foo extends Object {
+ var a;
+ var b;
+ var c;
+}
