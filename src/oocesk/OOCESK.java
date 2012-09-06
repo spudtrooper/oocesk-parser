@@ -644,7 +644,7 @@ final class PrintStmt extends Stmt {
     // Print the arguments
     for (AExp object : args) {
       Value val = object.eval(fp, store);
-      System.out.println(val);
+      System.out.println(val.toPrint());
     }
 
     return new State(this.next, fp, store, kont);
@@ -1253,6 +1253,8 @@ abstract class Value {
     else
       return FalseValue.VALUE;
   }
+  
+  public abstract String toPrint();
 }
 
 /**
@@ -1263,6 +1265,11 @@ class TrueValue extends Value {
   private TrueValue() {}
 
   public static final TrueValue VALUE = new TrueValue();
+
+  @Override
+  public String toPrint() {
+    return "true";
+  }
 }
 
 /**
@@ -1273,6 +1280,11 @@ class FalseValue extends Value {
   private FalseValue() {}
 
   public static final FalseValue VALUE = new FalseValue();
+  
+  @Override
+  public String toPrint() {
+    return "false";
+  }
 }
 
 /**
@@ -1283,6 +1295,11 @@ class NullValue extends Value {
   private NullValue() {}
 
   public static final NullValue VALUE = new NullValue();
+  
+  @Override
+  public String toPrint() {
+    return "null";
+  }
 }
 
 /**
@@ -1293,6 +1310,11 @@ class VoidValue extends Value {
   private VoidValue() {}
 
   public static final VoidValue VALUE = new VoidValue();
+  
+  @Override
+  public String toPrint() {
+    return "void";
+  }
 }
 
 /**
@@ -1311,6 +1333,11 @@ class IntValue extends Value {
 
   public int toInt() {
     return value;
+  }
+  
+  @Override
+  public String toPrint() {
+    return String.valueOf(this.value);
   }
 
 }
@@ -1347,6 +1374,11 @@ class ObjectValue extends Value {
    */
   public Addr offset(String fieldName) {
     return pointer.offset(fieldName);
+  }
+  
+  @Override
+  public String toPrint() {
+    return "TODO";
   }
 }
 

@@ -38,9 +38,22 @@ final class Token {
   public final String text;
   public final Type type;
 
-  Token(String text, Type type) {
+  public final int startLine, startCol, endLine, endCol;
+
+  /**
+   * For testing. . .
+   */
+  protected Token(String text, Type type) {
+    this(text, type, -1, -1, -1, -1);
+  }
+
+  Token(String text, Type type, int startLine, int startCol, int endLine, int endCol) {
     this.text = text;
     this.type = type;
+    this.startLine = startLine;
+    this.startCol = startCol;
+    this.endLine = endLine;
+    this.endCol = endCol;
   }
 
   @Override

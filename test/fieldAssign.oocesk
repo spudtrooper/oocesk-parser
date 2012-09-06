@@ -1,0 +1,6 @@
+class Foo extends Object {
+ var n;
+ def foo() {
+  this.n := 13;
+ }
+}

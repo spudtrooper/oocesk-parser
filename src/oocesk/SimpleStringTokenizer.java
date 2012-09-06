@@ -18,6 +18,8 @@ class SimpleStringTokenizer {
 
   private int next;
 
+  private int line = 1, col = 1;
+
   SimpleStringTokenizer(String buf, String delims) {
     if (buf == null) {
       throw new NullPointerException("buf can't be null");
@@ -56,16 +58,32 @@ class SimpleStringTokenizer {
       char c = this.buf.charAt(this.next);
       if (isDelim(c)) {
         if (sb.length() == 0) {
-          sb.append(c);
-          this.next++;
+          append(sb, c);
         }
         break;
       } else {
-        sb.append(c);
-        this.next++;
+        append(sb, c);
       }
     }
     return sb.toString();
+  }
+
+  /**
+   * Returns the current line.
+   * 
+   * @return the current line
+   */
+  public int getLine() {
+    return this.line;
+  }
+
+  /**
+   * Returns the current column.
+   * 
+   * @return the current column
+   */
+  public int getColumn() {
+    return this.col;
   }
 
   /**
@@ -75,6 +93,17 @@ class SimpleStringTokenizer {
    */
   public boolean hasMoreTokens() {
     return this.next < this.buf.length();
+  }
+
+  private void append(StringBuilder sb, char c) {
+    sb.append(c);
+    this.next++;
+    if (c == '\n') {
+      this.line++;
+      this.col = 1;
+    } else {
+      this.col++;
+    }
   }
 
   private boolean isDelim(char c) {

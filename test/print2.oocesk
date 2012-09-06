@@ -1,0 +1,7 @@
+class Foo extends Object {
+ var n;
+ def main() {
+  this.n = 13;
+  print(+(1,3));
+ }
+}

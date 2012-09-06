@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import oocesk.Token.Type;
+
 class Scanner {
 
   private final static Collection<String> TOKENS = Arrays.asList("{", "}", "(", ")", ":=", ":",
@@ -46,23 +48,31 @@ class Scanner {
     return this.st.peek();
   }
 
+  private int startLine, startCol;
+
   public Token nextToken() {
+    this.startLine = this.st.getLine();
+    this.startCol = this.st.getColumn();
+    return nextTokenLoop();
+  }
+
+  private Token nextTokenLoop() {
     String s = nextString();
     if (s == null) {
       return null;
     }
     if (isWhitespace(s)) {
-      return nextToken();
+      return nextTokenLoop();
     }
 
     // Ops
     if (ops.contains(s)) {
-      return new Token(s, Token.Type.Op);
+      return newToken(s, Token.Type.Op);
     }
 
     // Keywords
     if (keywords.contains(s)) {
-      return new Token(s, Token.Type.Keyword);
+      return newToken(s, Token.Type.Keyword);
     }
 
     // Tokens (hacky!) all because of the f'ing :=
@@ -74,21 +84,27 @@ class Scanner {
           t += nextString();
         }
       }
-      return new Token(t, Token.Type.Token);
+      return newToken(t, Token.Type.Token);
     }
 
     // Ints
     if (isInteger(s)) {
-      return new Token(s, Token.Type.Int);
+      return newToken(s, Token.Type.Int);
     }
 
     // Names
     if (s.startsWith("$")) {
-      return new Token(s, Token.Type.Name);
+      return newToken(s, Token.Type.Name);
     }
 
     // Id or label
-    return new Token(s, Token.Type.IdOrLabel);
+    return newToken(s, Token.Type.IdOrLabel);
+  }
+
+  private Token newToken(String text, Type type) {
+    int line = this.st.getLine();
+    int col = this.st.getColumn();
+    return new Token(text, type, this.startLine, this.startCol, line, col);
   }
 
   private boolean isInteger(String s) {

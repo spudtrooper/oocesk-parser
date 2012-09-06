@@ -205,11 +205,17 @@ class Parser {
           return res;
         }
       }
+    }
 
-      // aexp.field-name := aexp ;
-      else {
-
-      }
+    // aexp.field-name := aexp ;
+    AExp object = aexp();
+    if (object != null) {
+      shift(".");
+      String field = idOrLabel();
+      shift(":=");
+      AExp rhs = aexp();
+      shift(";");
+      return new FieldAssignStmt(stmt(), object, field, rhs);
     }
 
     return null;
@@ -492,11 +498,14 @@ class Parser {
           return t;
         }
       }
-      String msg = "Expected one of ";
+      String msg =
+        "Error @ " + t.startLine + "," + t.startCol + " -> " + t.endLine + "," + t.endCol;
+      msg += "\n";
+      msg += "Expected one of [";
       for (String s : expected) {
         msg += s + " ";
       }
-      msg += " -- have " + t.text;
+      msg += "] -- have " + t.text;
       throw new ParseException(msg);
     }
 

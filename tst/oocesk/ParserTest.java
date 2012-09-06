@@ -1,10 +1,12 @@
 package oocesk;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -13,6 +15,22 @@ import oocesk.Parser.ParseException;
 import org.junit.Test;
 
 public class ParserTest {
+
+  @Test
+  public void testFieldAssign() throws ParseException {
+    Stmt body = lookupOneBody("fieldAssign.oocesk", "foo");
+    FieldAssignStmt stmt = (FieldAssignStmt) body;
+    assertEquals("n", stmt.field);
+    FieldExp exp = (FieldExp) stmt.object;
+    assertTrue(exp.object instanceof ThisExp);
+    assertEquals(13, ((IntExp) stmt.rhs).value);
+  }
+
+  @Test
+  public void testThisAssign() throws ParseException {
+    Stmt body = lookupOneBody("thisAssign.oocesk", "foo");
+    assertNotNull(body);
+  }
 
   @Test
   public void testMethodDefPrint() throws ParseException {

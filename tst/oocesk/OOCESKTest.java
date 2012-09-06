@@ -14,6 +14,12 @@ public class OOCESKTest {
     ClassDef foo = getOneClass("print1.oocesk");
     OOCESK.execute(foo);
   }
+  
+  @Test
+  public void testPrint2() throws ParseException {
+    ClassDef foo = getOneClass("print2.oocesk");
+    OOCESK.execute(foo);
+  }
 
   @Test
   public void testReturn1() throws ParseException {
