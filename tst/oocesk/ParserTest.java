@@ -21,8 +21,8 @@ public class ParserTest {
     Stmt body = lookupOneBody("fieldAssign.oocesk", "foo");
     FieldAssignStmt stmt = (FieldAssignStmt) body;
     assertEquals("n", stmt.field);
-    FieldExp exp = (FieldExp) stmt.object;
-    assertTrue(exp.object instanceof ThisExp);
+    ThisExp exp = (ThisExp) stmt.object;
+    assertNotNull(exp);
     assertEquals(13, ((IntExp) stmt.rhs).value);
   }
 

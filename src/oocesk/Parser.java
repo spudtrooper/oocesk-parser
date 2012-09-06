@@ -210,8 +210,17 @@ class Parser {
     // aexp.field-name := aexp ;
     AExp object = aexp();
     if (object != null) {
-      shift(".");
-      String field = idOrLabel();
+      String field;
+      // Since object may already be a field access, take it apart if necessary.
+      // This is absolutely the wrong thing to do, but these rules are ambiguous
+      if (object instanceof FieldExp) {
+        FieldExp fe = (FieldExp) object;
+        object = fe.object;
+        field = fe.field;
+      } else {
+        shift(".");
+        field = idOrLabel();
+      }
       shift(":=");
       AExp rhs = aexp();
       shift(";");
@@ -243,8 +252,17 @@ class Parser {
       // invoke aexp.method-name(aexp,...,aexp)
       else {
         AExp object = aexp();
-        shift(".");
-        String methodName = idOrLabel();
+        // This could a field access expression, if so separate it. This is
+        // because the left recursion on aexps
+        String methodName;
+        if (object instanceof FieldExp) {
+          FieldExp fe = (FieldExp) object;
+          object = fe.object;
+          methodName = fe.field;
+        } else {
+          shift(".");
+          methodName = idOrLabel();
+        }
         AExp[] args = aexps();
         return new InvokeStmt(stmt(), lhs, object, methodName, args);
       }
@@ -262,7 +280,7 @@ class Parser {
     if (object == null) {
       return null;
     }
-    if (tokenMatches(".")) {
+    if (haveToken(".")) {
       String field = idOrLabel();
       return new FieldExp(object, field);
     }
