@@ -22,139 +22,139 @@ import com.google.common.collect.ImmutableSortedMap;
  */
 class ClassDef {
 
-	/**
-	 * The name of the class.
-	 */
-	public final String name;
+  /**
+   * The name of the class.
+   */
+  public final String name;
 
-	/**
-	 * The name of the parent of this class.
-	 */
-	public final String parentClassName;
+  /**
+   * The name of the parent of this class.
+   */
+  public final String parentClassName;
 
-	private final Hashtable<String, MethodDef> methods = new Hashtable<String, MethodDef>();
+  private final Hashtable<String, MethodDef> methods = new Hashtable<String, MethodDef>();
 
-	private final Hashtable<String, FieldDef> fields = new Hashtable<String, FieldDef>();
+  private final Hashtable<String, FieldDef> fields = new Hashtable<String, FieldDef>();
 
-	/**
-	 * Creates a new class definition.
-	 * 
-	 * @param name
-	 *          the name of the class
-	 * @param parentClassName
-	 *          the name of the parent of this class
-	 */
-	public ClassDef(String name, String parentClassName) {
-		this.name = name;
-		this.parentClassName = parentClassName;
-		classMap.put(name, this);
-	}
+  /**
+   * Creates a new class definition.
+   * 
+   * @param name
+   *          the name of the class
+   * @param parentClassName
+   *          the name of the parent of this class
+   */
+  public ClassDef(String name, String parentClassName) {
+    this.name = name;
+    this.parentClassName = parentClassName;
+    classMap.put(name, this);
+  }
 
-	/**
-	 * Checks if this class is a sub-class of another.
-	 * 
-	 * @return true iff this class is a sub-class of the argument.
-	 */
-	public boolean isInstanceOf(String otherClassName) {
-		if (this.name.equals(otherClassName))
-			return true;
+  /**
+   * Checks if this class is a sub-class of another.
+   * 
+   * @return true iff this class is a sub-class of the argument.
+   */
+  public boolean isInstanceOf(String otherClassName) {
+    if (this.name.equals(otherClassName))
+      return true;
 
-		if (this.parentClass() == null)
-			return false;
+    if (this.parentClass() == null)
+      return false;
 
-		return this.parentClass().isInstanceOf(otherClassName);
-	}
+    return this.parentClass().isInstanceOf(otherClassName);
+  }
 
-	/**
-	 * Looks up the parent class definition of this class.
-	 * 
-	 * @return the parent class definition of this class
-	 */
-	public ClassDef parentClass() {
-		return classMap.get(parentClassName);
-	}
+  /**
+   * Looks up the parent class definition of this class.
+   * 
+   * @return the parent class definition of this class
+   */
+  public ClassDef parentClass() {
+    return classMap.get(parentClassName);
+  }
 
-	/**
-	 * Returns the right method, possible searching super-classes.
-	 * 
-	 * @param methodName
-	 *          the name of the method to look up
-	 * @return the method definition
-	 */
-	public MethodDef lookupMethod(String methodName) {
-		// Check locally first:
-		if (methods.containsKey(methodName))
-			return methods.get(methodName);
+  /**
+   * Returns the right method, possible searching super-classes.
+   * 
+   * @param methodName
+   *          the name of the method to look up
+   * @return the method definition
+   */
+  public MethodDef lookupMethod(String methodName) {
+    // Check locally first:
+    if (methods.containsKey(methodName))
+      return methods.get(methodName);
 
-		// Recur in the parent:
-		if (parentClassName != null) {
-			ClassDef par = parentClass();
-			return par == null ? null : par.lookupMethod(methodName);
-		} else {
-			throw new RuntimeException("no such method: " + methodName);
-		}
-	}
+    // Recur in the parent:
+    if (parentClassName != null) {
+      ClassDef par = parentClass();
+      return par == null ? null : par.lookupMethod(methodName);
+    } else {
+      throw new RuntimeException("no such method: " + methodName);
+    }
+  }
 
-	/**
-	 * Returns the right field, possible searching super-classes.
-	 * 
-	 * @param fieldName
-	 *          the name of the field to look up
-	 * @return the field definition
-	 */
-	public FieldDef lookupField(String fieldName) {
-		// Check locally first:
-		if (fields.containsKey(fieldName))
-			return fields.get(fieldName);
+  /**
+   * Returns the right field, possible searching super-classes.
+   * 
+   * @param fieldName
+   *          the name of the field to look up
+   * @return the field definition
+   */
+  public FieldDef lookupField(String fieldName) {
+    // Check locally first:
+    if (fields.containsKey(fieldName))
+      return fields.get(fieldName);
 
-		// Recur in the parent:
-		if (parentClassName != null) {
-			ClassDef par = parentClass();
-			return par == null ? null : par.lookupField(fieldName);
-		} else {
-			throw new RuntimeException("no such field: " + fieldName);
-		}
-	}
+    // Recur in the parent:
+    if (parentClassName != null) {
+      ClassDef par = parentClass();
+      return par == null ? null : par.lookupField(fieldName);
+    } else {
+      throw new RuntimeException("no such field: " + fieldName);
+    }
+  }
 
-	/**
-	 * Adds a method to this class.
-	 * 
-	 * @param methodName
-	 *          the name of the method to add
-	 * @param formals
-	 *          the formal arguments to the method
-	 * @param body
-	 *          the initial statement of the method
-	 */
-	public void addMethod(String methodName, String[] formals, Stmt body) {
-		MethodDef m = new MethodDef(methodName, formals, body);
-		methods.put(methodName, m);
-	}
+  /**
+   * Adds a method to this class.
+   * 
+   * @param methodName
+   *          the name of the method to add
+   * @param formals
+   *          the formal arguments to the method
+   * @param body
+   *          the initial statement of the method
+   */
+  public void addMethod(String methodName, String[] formals, Stmt body) {
+    MethodDef m = new MethodDef(methodName, formals, body);
+    methods.put(methodName, m);
+  }
 
-	/**
-	 * Adds a field to this class.
-	 * 
-	 * @param fieldName
-	 *          the name of the field to add
-	 */
-	public void addField(String fieldName) {
-		FieldDef f = new FieldDef(fieldName);
-		fields.put(fieldName, f);
-	}
+  /**
+   * Adds a field to this class.
+   * 
+   * @param fieldName
+   *          the name of the field to add
+   */
+  public void addField(String fieldName) {
+    FieldDef f = new FieldDef(fieldName);
+    fields.put(fieldName, f);
+  }
 
-	/* The global class database. */
-	private static Hashtable<String, ClassDef> classMap = new Hashtable<String, ClassDef>();
+  /* The global class database. */
+  private static Hashtable<String, ClassDef> classMap = new Hashtable<String, ClassDef>();
 
-	/**
-	 * Look up a class based on its name.
-	 * 
-	 * @param className
-	 *          the name of the class to look up
-	 * @return the class with the given name
-	 */
-	public static ClassDef forName(String className) {
-		return classMap.get(className);
-	}
+  /**
+   * Look up a class based on its name.
+   * 
+   * @param className
+   *          the name of the class to look up
+   * @return the class with the given name
+   */
+  public static ClassDef forName(String className) {
+    return classMap.get(className);
+  }
 }
 
 /**
@@ -162,29 +162,29 @@ class ClassDef {
  */
 class MethodDef {
 
-	/**
-	 * The name of the method.
-	 */
-	public final String name;
+  /**
+   * The name of the method.
+   */
+  public final String name;
 
-	/**
-	 * The formal parameters for the method.
-	 */
-	public final String[] formals;
+  /**
+   * The formal parameters for the method.
+   */
+  public final String[] formals;
 
-	/**
-	 * The body of the method (as the initial statement).
-	 */
-	public final Stmt body;
+  /**
+   * The body of the method (as the initial statement).
+   */
+  public final Stmt body;
 
-	/**
-	 * Constructs a new method definition.
-	 */
-	public MethodDef(String name, String[] formals, Stmt body) {
-		this.name = name;
-		this.formals = formals;
-		this.body = body;
-	}
+  /**
+   * Constructs a new method definition.
+   */
+  public MethodDef(String name, String[] formals, Stmt body) {
+    this.name = name;
+    this.formals = formals;
+    this.body = body;
+  }
 }
 
 /**
@@ -192,17 +192,17 @@ class MethodDef {
  */
 class FieldDef {
 
-	/**
-	 * The name of the field.
-	 */
-	public final String name;
+  /**
+   * The name of the field.
+   */
+  public final String name;
 
-	/**
-	 * Constructs a new field definition.
-	 */
-	public FieldDef(String name) {
-		this.name = name;
-	}
+  /**
+   * Constructs a new field definition.
+   */
+  public FieldDef(String name) {
+    this.name = name;
+  }
 }
 
 /*- Statements -*/
@@ -212,59 +212,59 @@ class FieldDef {
  */
 abstract class Stmt {
 
-	/**
-	 * The syntactic successor of this statement.
-	 */
-	public final Stmt next;
+  /**
+   * The syntactic successor of this statement.
+   */
+  public final Stmt next;
 
-	/**
-	 * Constructs a new statement.
-	 * 
-	 * @param next
-	 *          the statement that syntactically follows this one
-	 */
-	public Stmt(Stmt next) {
-		this.next = next;
-	}
+  /**
+   * Constructs a new statement.
+   * 
+   * @param next
+   *          the statement that syntactically follows this one
+   */
+  public Stmt(Stmt next) {
+    this.next = next;
+  }
 
-	/**
-	 * Steps through to the next state of execution, assuming this statement is
-	 * paired with the given frame poiner, a store and a continuation.
-	 * 
-	 * @param fp
-	 *          the current frame pointer
-	 * @param store
-	 *          the current store
-	 * @param kont
-	 *          the current continuation
-	 * @return the next state
-	 */
-	public abstract State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont);
+  /**
+   * Steps through to the next state of execution, assuming this statement is
+   * paired with the given frame poiner, a store and a continuation.
+   * 
+   * @param fp
+   *          the current frame pointer
+   * @param store
+   *          the current store
+   * @param kont
+   *          the current continuation
+   * @return the next state
+   */
+  public abstract State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont);
 
-	/* Label-to-statement lookup methods. */
+  /* Label-to-statement lookup methods. */
 
-	private static Hashtable<String, Stmt> stmtMap = new Hashtable<String, Stmt>();
+  private static Hashtable<String, Stmt> stmtMap = new Hashtable<String, Stmt>();
 
-	/**
-	 * Registers this statement as at the supplied label.
-	 * 
-	 * @param labelName
-	 *          the label to which this statement should be attached
-	 */
-	protected void register(String labelName) {
-		stmtMap.put(labelName, this);
-	}
+  /**
+   * Registers this statement as at the supplied label.
+   * 
+   * @param labelName
+   *          the label to which this statement should be attached
+   */
+  protected void register(String labelName) {
+    stmtMap.put(labelName, this);
+  }
 
-	/**
-	 * Maps a label back to a statement.
-	 * 
-	 * @param labelName
-	 *          the label to look up
-	 * @return the statement for the given label
-	 */
-	public static Stmt forLabel(String labelName) {
-		return stmtMap.get(labelName);
-	}
+  /**
+   * Maps a label back to a statement.
+   * 
+   * @param labelName
+   *          the label to look up
+   * @return the statement for the given label
+   */
+  public static Stmt forLabel(String labelName) {
+    return stmtMap.get(labelName);
+  }
 
 }
 
@@ -273,28 +273,28 @@ abstract class Stmt {
  */
 final class LabelStmt extends Stmt {
 
-	/**
-	 * The name of the label.
-	 */
-	public final String label;
+  /**
+   * The name of the label.
+   */
+  public final String label;
 
-	/**
-	 * Creates a labeled statement.
-	 */
-	public LabelStmt(String label, Stmt next) {
-		super(next);
-		this.label = label;
-		this.register(label);
-	}
+  /**
+   * Creates a labeled statement.
+   */
+  public LabelStmt(String label, Stmt next) {
+    super(next);
+    this.label = label;
+    this.register(label);
+  }
 
-	/**
-	 * Skips to the next instruction.
-	 */
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
-		// this.next is the syntactic successor
-		// of the current instruction:
-		return new State(this.next, fp, store, kont);
-	}
+  /**
+   * Skips to the next instruction.
+   */
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+    // this.next is the syntactic successor
+    // of the current instruction:
+    return new State(this.next, fp, store, kont);
+  }
 
 }
 
@@ -303,21 +303,21 @@ final class LabelStmt extends Stmt {
  */
 final class SkipStmt extends Stmt {
 
-	/**
-	 * Creates a skip statement.
-	 */
-	public SkipStmt(Stmt next) {
-		super(next);
-	}
+  /**
+   * Creates a skip statement.
+   */
+  public SkipStmt(Stmt next) {
+    super(next);
+  }
 
-	/**
-	 * Skips to the next statement.
-	 */
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
-		// this.next is the syntactic successor
-		// of the current statement:
-		return new State(this.next, fp, store, kont);
-	}
+  /**
+   * Skips to the next statement.
+   */
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+    // this.next is the syntactic successor
+    // of the current statement:
+    return new State(this.next, fp, store, kont);
+  }
 
 }
 
@@ -326,28 +326,28 @@ final class SkipStmt extends Stmt {
  */
 final class GotoStmt extends Stmt {
 
-	/**
-	 * The label to which to jump.
-	 */
-	public final String label;
+  /**
+   * The label to which to jump.
+   */
+  public final String label;
 
-	/**
-	 * Creates a goto statement.
-	 */
-	public GotoStmt(Stmt next, String label) {
-		super(next);
-		this.label = label;
-	}
+  /**
+   * Creates a goto statement.
+   */
+  public GotoStmt(Stmt next, String label) {
+    super(next);
+    this.label = label;
+  }
 
-	/**
-	 * Jumps to the given label, leaving all other components the same.
-	 */
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
-		/*
-		 * Stmt.forLabel(label) yields the statement that has that label.
-		 */
-		return new State(Stmt.forLabel(label), fp, store, kont);
-	}
+  /**
+   * Jumps to the given label, leaving all other components the same.
+   */
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+    /*
+     * Stmt.forLabel(label) yields the statement that has that label.
+     */
+    return new State(Stmt.forLabel(label), fp, store, kont);
+  }
 }
 
 /**
@@ -356,38 +356,38 @@ final class GotoStmt extends Stmt {
  */
 final class IfStmt extends Stmt {
 
-	/**
-	 * The label to which to jump if the condition is true.
-	 */
-	public final String label;
+  /**
+   * The label to which to jump if the condition is true.
+   */
+  public final String label;
 
-	/**
-	 * The condition te test.
-	 */
-	public final AExp condition;
+  /**
+   * The condition te test.
+   */
+  public final AExp condition;
 
-	/**
-	 * Creates an if statement.
-	 */
-	public IfStmt(Stmt next, AExp condition, String label) {
-		super(next);
-		this.label = label;
-		this.condition = condition;
-	}
+  /**
+   * Creates an if statement.
+   */
+  public IfStmt(Stmt next, AExp condition, String label) {
+    super(next);
+    this.label = label;
+    this.condition = condition;
+  }
 
-	/**
-	 * Jumps to the target label if the condition is true, falling through
-	 * otherwise.
-	 */
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
-		// Test the condition:
-		if (condition.eval(fp, store).toBoolean())
-			// if true, jump to the label:
-			return new State(Stmt.forLabel(label), fp, store, kont);
-		else
-			// if not, fall through:
-			return new State(this.next, fp, store, kont);
-	}
+  /**
+   * Jumps to the target label if the condition is true, falling through
+   * otherwise.
+   */
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+    // Test the condition:
+    if (condition.eval(fp, store).toBoolean())
+      // if true, jump to the label:
+      return new State(Stmt.forLabel(label), fp, store, kont);
+    else
+      // if not, fall through:
+      return new State(this.next, fp, store, kont);
+  }
 }
 
 /**
@@ -396,38 +396,38 @@ final class IfStmt extends Stmt {
  */
 final class AssignAExpStmt extends Stmt {
 
-	/**
-	 * The register into which to assign the result.
-	 */
-	public final String lhs;
+  /**
+   * The register into which to assign the result.
+   */
+  public final String lhs;
 
-	/**
-	 * The expression to evaluate.
-	 */
-	public final AExp rhs;
+  /**
+   * The expression to evaluate.
+   */
+  public final AExp rhs;
 
-	/**
-	 * Creates a new assignment expression.
-	 */
-	public AssignAExpStmt(Stmt next, String lhs, AExp rhs) {
-		super(next);
-		this.lhs = lhs;
-		this.rhs = rhs;
-	}
+  /**
+   * Creates a new assignment expression.
+   */
+  public AssignAExpStmt(Stmt next, String lhs, AExp rhs) {
+    super(next);
+    this.lhs = lhs;
+    this.rhs = rhs;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
-		// Compute the address of the register:
-		Addr a = fp.offset(lhs);
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+    // Compute the address of the register:
+    Addr a = fp.offset(lhs);
 
-		// Evaluate the right-hand side:
-		Value val = rhs.eval(fp, store);
+    // Evaluate the right-hand side:
+    Value val = rhs.eval(fp, store);
 
-		// Bind the result in the store:
-		ImmutableMap<Addr, Value> store_ = Store.extend(store, a, val);
+    // Bind the result in the store:
+    ImmutableMap<Addr, Value> store_ = Store.extend(store, a, val);
 
-		// Construct the new state:
-		return new State(this.next, fp, store_, kont);
-	}
+    // Construct the new state:
+    return new State(this.next, fp, store_, kont);
+  }
 }
 
 /**
@@ -435,42 +435,42 @@ final class AssignAExpStmt extends Stmt {
  */
 final class NewStmt extends Stmt {
 
-	/**
-	 * The register in which the new object pointer will reside.
-	 */
-	public final String lhs;
+  /**
+   * The register in which the new object pointer will reside.
+   */
+  public final String lhs;
 
-	/**
-	 * The name of the class for the new object.
-	 */
-	public final String className;
+  /**
+   * The name of the class for the new object.
+   */
+  public final String className;
 
-	/**
-	 * Creates an object allocation statement.
-	 */
-	public NewStmt(Stmt next, String lhs, String className) {
-		super(next);
-		this.lhs = lhs;
-		this.className = className;
-	}
+  /**
+   * Creates an object allocation statement.
+   */
+  public NewStmt(Stmt next, String lhs, String className) {
+    super(next);
+    this.lhs = lhs;
+    this.className = className;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// Compute the address of the register:
-		Addr a = fp.offset(lhs);
+    // Compute the address of the register:
+    Addr a = fp.offset(lhs);
 
-		// Construct a new object pointer:
-		ObjectPointer op = new ObjectPointer();
+    // Construct a new object pointer:
+    ObjectPointer op = new ObjectPointer();
 
-		// Construct the object intself:
-		ObjectValue object = new ObjectValue(className, op);
+    // Construct the object intself:
+    ObjectValue object = new ObjectValue(className, op);
 
-		// Bind the register to the object:
-		ImmutableMap<Addr, Value> store_ = Store.extend(store, a, object);
+    // Bind the register to the object:
+    ImmutableMap<Addr, Value> store_ = Store.extend(store, a, object);
 
-		// Construct the new state:
-		return new State(this.next, fp, store_, kont);
-	}
+    // Construct the new state:
+    return new State(this.next, fp, store_, kont);
+  }
 
 }
 
@@ -479,57 +479,57 @@ final class NewStmt extends Stmt {
  */
 abstract class AbstractInvokeStmt extends Stmt {
 
-	/**
-	 * The register into which the result will be assigned.
-	 */
-	public final String lhs;
+  /**
+   * The register into which the result will be assigned.
+   */
+  public final String lhs;
 
-	/**
-	 * The name of the method to call.
-	 */
-	public final String methodName;
+  /**
+   * The name of the method to call.
+   */
+  public final String methodName;
 
-	/**
-	 * The arguments to pass.
-	 */
-	public final AExp[] args;
+  /**
+   * The arguments to pass.
+   */
+  public final AExp[] args;
 
-	public AbstractInvokeStmt(Stmt next, String lhs, String methodName, AExp[] args) {
-		super(next);
-		this.lhs = lhs;
-		this.methodName = methodName;
-		this.args = args;
-	}
+  public AbstractInvokeStmt(Stmt next, String lhs, String methodName, AExp[] args) {
+    super(next);
+    this.lhs = lhs;
+    this.methodName = methodName;
+    this.args = args;
+  }
 
-	/**
-	 * Applies the given method on the specified object.
-	 */
-	protected State applyMethod(MethodDef m, ObjectValue thiss, FramePointer fp,
-			ImmutableMap<Addr, Value> store, Kont kont) {
+  /**
+   * Applies the given method on the specified object.
+   */
+  protected State applyMethod(MethodDef m, ObjectValue thiss, FramePointer fp,
+      ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// Move to the body of the procedure:
-		Stmt stmt = m.body;
+    // Move to the body of the procedure:
+    Stmt stmt = m.body;
 
-		// Allocate a new frame pointer:
-		FramePointer fp_ = fp.push();
+    // Allocate a new frame pointer:
+    FramePointer fp_ = fp.push();
 
-		// Capture the return context as a continuation:
-		Kont kont_ = new AssignKont(this.lhs, this.next, fp, kont);
+    // Capture the return context as a continuation:
+    Kont kont_ = new AssignKont(this.lhs, this.next, fp, kont);
 
-		// Bind $this:
-		ImmutableMap<Addr, Value> store_ = store;
-		store_ = Store.extend(store_, fp_.offset("$this"), thiss);
+    // Bind $this:
+    ImmutableMap<Addr, Value> store_ = store;
+    store_ = Store.extend(store_, fp_.offset("$this"), thiss);
 
-		// Bind addresses to values of arguments:
-		for (int i = 0; i < m.formals.length; ++i) {
-			Addr a = fp_.offset(m.formals[i]);
-			Value v = args[i].eval(fp, store);
-			store_ = Store.extend(store_, a, v);
-		}
+    // Bind addresses to values of arguments:
+    for (int i = 0; i < m.formals.length; ++i) {
+      Addr a = fp_.offset(m.formals[i]);
+      Value v = args[i].eval(fp, store);
+      store_ = Store.extend(store_, a, v);
+    }
 
-		// Create the new state:
-		return new State(stmt, fp_, store_, kont_);
-	}
+    // Create the new state:
+    return new State(stmt, fp_, store_, kont_);
+  }
 
 }
 
@@ -538,33 +538,33 @@ abstract class AbstractInvokeStmt extends Stmt {
  */
 final class InvokeStmt extends AbstractInvokeStmt {
 
-	/**
-	 * The object with the method:
-	 */
-	public final AExp object;
+  /**
+   * The object with the method:
+   */
+  public final AExp object;
 
-	/**
-	 * Creates a method invocation statement.
-	 */
-	public InvokeStmt(Stmt next, String lhs, AExp object, String methodName, AExp[] args) {
-		super(next, lhs, methodName, args);
-		this.object = object;
-	}
+  /**
+   * Creates a method invocation statement.
+   */
+  public InvokeStmt(Stmt next, String lhs, AExp object, String methodName, AExp[] args) {
+    super(next, lhs, methodName, args);
+    this.object = object;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// Look up the object:
-		ObjectValue thiss = (ObjectValue) object.eval(fp, store);
+    // Look up the object:
+    ObjectValue thiss = (ObjectValue) object.eval(fp, store);
 
-		// Check its class:
-		ClassDef classs = ClassDef.forName(thiss.className);
+    // Check its class:
+    ClassDef classs = ClassDef.forName(thiss.className);
 
-		// Look up the method in this class:
-		MethodDef method = classs.lookupMethod(methodName);
+    // Look up the method in this class:
+    MethodDef method = classs.lookupMethod(methodName);
 
-		// Apply the method:
-		return applyMethod(method, thiss, fp, store, kont);
-	}
+    // Apply the method:
+    return applyMethod(method, thiss, fp, store, kont);
+  }
 }
 
 /**
@@ -572,27 +572,27 @@ final class InvokeStmt extends AbstractInvokeStmt {
  */
 final class InvokeSuperStmt extends AbstractInvokeStmt {
 
-	/**
-	 * Creates super method invocation statement.
-	 */
-	public InvokeSuperStmt(Stmt next, String lhs, String methodName, AExp[] args) {
-		super(next, lhs, methodName, args);
-	}
+  /**
+   * Creates super method invocation statement.
+   */
+  public InvokeSuperStmt(Stmt next, String lhs, String methodName, AExp[] args) {
+    super(next, lhs, methodName, args);
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// First, get "this":
-		ObjectValue thiss = (ObjectValue) store.get(fp.offset("$this"));
+    // First, get "this":
+    ObjectValue thiss = (ObjectValue) store.get(fp.offset("$this"));
 
-		// Find the parent of "this":
-		ClassDef parent = ClassDef.forName(thiss.className).parentClass();
+    // Find the parent of "this":
+    ClassDef parent = ClassDef.forName(thiss.className).parentClass();
 
-		// Look up the method in the parent:
-		MethodDef method = parent.lookupMethod(methodName);
+    // Look up the method in the parent:
+    MethodDef method = parent.lookupMethod(methodName);
 
-		// Apply the method:
-		return applyMethod(method, thiss, fp, store, kont);
-	}
+    // Apply the method:
+    return applyMethod(method, thiss, fp, store, kont);
+  }
 }
 
 /**
@@ -600,26 +600,26 @@ final class InvokeSuperStmt extends AbstractInvokeStmt {
  */
 final class ReturnStmt extends Stmt {
 
-	/**
-	 * An expression containing the result of the method.
-	 */
-	public AExp result;
+  /**
+   * An expression containing the result of the method.
+   */
+  public AExp result;
 
-	/**
-	 * The result of the current procedure.
-	 */
-	public ReturnStmt(Stmt next, AExp result) {
-		super(next);
-		this.result = result;
-	}
+  /**
+   * The result of the current procedure.
+   */
+  public ReturnStmt(Stmt next, AExp result) {
+    super(next);
+    this.result = result;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
-		// Compute the return value:
-		Value returnValue = result.eval(fp, store);
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+    // Compute the return value:
+    Value returnValue = result.eval(fp, store);
 
-		// Apply the current continuation:
-		return kont.apply(returnValue, store);
-	}
+    // Apply the current continuation:
+    return kont.apply(returnValue, store);
+  }
 }
 
 /**
@@ -627,28 +627,28 @@ final class ReturnStmt extends Stmt {
  */
 final class PrintStmt extends Stmt {
 
-	/**
-	 * Arguments to print
-	 */
-	public AExp[] args;
+  /**
+   * Arguments to print
+   */
+  public AExp[] args;
 
-	/**
-	 * The result of the current procedure.
-	 */
-	public PrintStmt(Stmt next, AExp[] args) {
-		super(next);
-		this.args = args;
-	}
+  /**
+   * The result of the current procedure.
+   */
+  public PrintStmt(Stmt next, AExp[] args) {
+    super(next);
+    this.args = args;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
-		// Print the arguments
-		for (AExp object : args) {
-			Value val = object.eval(fp, store);
-			System.out.println(val);
-		}
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+    // Print the arguments
+    for (AExp object : args) {
+      Value val = object.eval(fp, store);
+      System.out.println(val);
+    }
 
-		return new State(this.next, fp, store, kont);
-	}
+    return new State(this.next, fp, store, kont);
+  }
 }
 
 /**
@@ -656,48 +656,48 @@ final class PrintStmt extends Stmt {
  */
 final class FieldAssignStmt extends Stmt {
 
-	/**
-	 * The object with a field.
-	 */
-	public final AExp object;
+  /**
+   * The object with a field.
+   */
+  public final AExp object;
 
-	/**
-	 * The field on the object.
-	 */
-	public final String field;
+  /**
+   * The field on the object.
+   */
+  public final String field;
 
-	/**
-	 * The value to be assigned.
-	 */
-	public final AExp rhs;
+  /**
+   * The value to be assigned.
+   */
+  public final AExp rhs;
 
-	/**
-	 * Creates a new field assignment statement.
-	 */
-	public FieldAssignStmt(Stmt next, AExp object, String field, AExp rhs) {
-		super(next);
-		this.object = object;
-		this.field = field;
-		this.rhs = rhs;
-	}
+  /**
+   * Creates a new field assignment statement.
+   */
+  public FieldAssignStmt(Stmt next, AExp object, String field, AExp rhs) {
+    super(next);
+    this.object = object;
+    this.field = field;
+    this.rhs = rhs;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// Evaluate the object:
-		Value obj = object.eval(fp, store);
+    // Evaluate the object:
+    Value obj = object.eval(fp, store);
 
-		// Evaluate the right-hand side:
-		Value val = rhs.eval(fp, store);
+    // Evaluate the right-hand side:
+    Value val = rhs.eval(fp, store);
 
-		// Compute the address of the field:
-		Addr fieldAddr = obj.offset(field);
+    // Compute the address of the field:
+    Addr fieldAddr = obj.offset(field);
 
-		// Bind the field address in the store:
-		ImmutableMap<Addr, Value> store_ = Store.extend(store, fieldAddr, val);
+    // Bind the field address in the store:
+    ImmutableMap<Addr, Value> store_ = Store.extend(store, fieldAddr, val);
 
-		// Create the next state:
-		return new State(next, fp, store_, kont);
-	}
+    // Create the next state:
+    return new State(next, fp, store_, kont);
+  }
 }
 
 /**
@@ -705,33 +705,33 @@ final class FieldAssignStmt extends Stmt {
  */
 final class PushHandlerStmt extends Stmt {
 
-	/**
-	 * The (super)type of exceptions to catch.
-	 */
-	public String className;
+  /**
+   * The (super)type of exceptions to catch.
+   */
+  public String className;
 
-	/**
-	 * The label to branch when an exception is caught.
-	 */
-	public String label;
+  /**
+   * The label to branch when an exception is caught.
+   */
+  public String label;
 
-	/**
-	 * Creates a handler-pushing statement.
-	 */
-	public PushHandlerStmt(Stmt next, String className, String label) {
-		super(next);
-		this.className = className;
-		this.label = label;
-	}
+  /**
+   * Creates a handler-pushing statement.
+   */
+  public PushHandlerStmt(Stmt next, String className, String label) {
+    super(next);
+    this.className = className;
+    this.label = label;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// Create a new continuation:
-		Kont kont_ = new HandlerKont(className, label, kont);
+    // Create a new continuation:
+    Kont kont_ = new HandlerKont(className, label, kont);
 
-		// Continuation to the next statement:
-		return new State(next, fp, store, kont_);
-	}
+    // Continuation to the next statement:
+    return new State(next, fp, store, kont_);
+  }
 }
 
 /**
@@ -739,18 +739,18 @@ final class PushHandlerStmt extends Stmt {
  */
 final class PopHandlerStmt extends Stmt {
 
-	public PopHandlerStmt(Stmt next) {
-		super(next);
-	}
+  public PopHandlerStmt(Stmt next) {
+    super(next);
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// Pop off the topmost handler:
-		Kont kont_ = kont.popHandler();
+    // Pop off the topmost handler:
+    Kont kont_ = kont.popHandler();
 
-		// Continue to the next statement:
-		return new State(next, fp, store, kont_);
-	}
+    // Continue to the next statement:
+    return new State(next, fp, store, kont_);
+  }
 }
 
 /**
@@ -758,27 +758,27 @@ final class PopHandlerStmt extends Stmt {
  */
 final class ThrowStmt extends Stmt {
 
-	/**
-	 * The exception to throw (which must evaluate to an object).
-	 */
-	public final AExp exception;
+  /**
+   * The exception to throw (which must evaluate to an object).
+   */
+  public final AExp exception;
 
-	/**
-	 * Creates a throw statement.
-	 */
-	public ThrowStmt(Stmt next, AExp exception) {
-		super(next);
-		this.exception = exception;
-	}
+  /**
+   * Creates a throw statement.
+   */
+  public ThrowStmt(Stmt next, AExp exception) {
+    super(next);
+    this.exception = exception;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// Evaluate the exception to be thrown:
-		Value exceptionValue = exception.eval(fp, store);
+    // Evaluate the exception to be thrown:
+    Value exceptionValue = exception.eval(fp, store);
 
-		// Throw it at the stack:
-		return kont.handle((ObjectValue) exceptionValue, fp, store);
-	}
+    // Throw it at the stack:
+    return kont.handle((ObjectValue) exceptionValue, fp, store);
+  }
 }
 
 /**
@@ -788,30 +788,30 @@ final class ThrowStmt extends Stmt {
  */
 final class MoveExceptionStmt extends Stmt {
 
-	/**
-	 * The register to receive the exception value.
-	 */
-	public final String register;
+  /**
+   * The register to receive the exception value.
+   */
+  public final String register;
 
-	/**
-	 * Creates a statement to capture the most recent exception.
-	 */
-	public MoveExceptionStmt(Stmt next, String register) {
-		super(next);
-		this.register = register;
-	}
+  /**
+   * Creates a statement to capture the most recent exception.
+   */
+  public MoveExceptionStmt(Stmt next, String register) {
+    super(next);
+    this.register = register;
+  }
 
-	public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+  public State step(FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
 
-		// Capture the most recent exception from $ex:
-		Value ex = store.get(fp.offset("$ex"));
+    // Capture the most recent exception from $ex:
+    Value ex = store.get(fp.offset("$ex"));
 
-		// Move the exception into the register:
-		ImmutableMap<Addr, Value> store_ = Store.extend(store, fp.offset(register), ex);
+    // Move the exception into the register:
+    ImmutableMap<Addr, Value> store_ = Store.extend(store, fp.offset(register), ex);
 
-		// Step to the next statement:
-		return new State(next, fp, store_, kont);
-	}
+    // Step to the next statement:
+    return new State(next, fp, store_, kont);
+  }
 
 }
 
@@ -823,26 +823,26 @@ final class MoveExceptionStmt extends Stmt {
  */
 abstract class AExp {
 
-	/**
-	 * Returns the value of this expression with respect to the given frame
-	 * pointer and the current store.
-	 * 
-	 * @param fp
-	 *          the active frame pointer
-	 * @param store
-	 *          the current store
-	 * @return the result of the expression
-	 */
-	abstract Value eval(FramePointer fp, ImmutableMap<Addr, Value> store);
+  /**
+   * Returns the value of this expression with respect to the given frame
+   * pointer and the current store.
+   * 
+   * @param fp
+   *          the active frame pointer
+   * @param store
+   *          the current store
+   * @return the result of the expression
+   */
+  abstract Value eval(FramePointer fp, ImmutableMap<Addr, Value> store);
 }
 
 /**
  * An expression that represents the current object.
  */
 class ThisExp extends AExp {
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
-		return store.get(fp.offset("$this"));
-	}
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+    return store.get(fp.offset("$this"));
+  }
 }
 
 /**
@@ -850,39 +850,39 @@ class ThisExp extends AExp {
  */
 class BooleanExp extends AExp {
 
-	/**
-	 * The value of this boolean expression.
-	 */
-	public final boolean value;
+  /**
+   * The value of this boolean expression.
+   */
+  public final boolean value;
 
-	public BooleanExp(boolean value) {
-		this.value = value;
-	}
+  public BooleanExp(boolean value) {
+    this.value = value;
+  }
 
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
-		if (value)
-			return TrueValue.VALUE;
-		else
-			return FalseValue.VALUE;
-	}
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+    if (value)
+      return TrueValue.VALUE;
+    else
+      return FalseValue.VALUE;
+  }
 }
 
 /**
  * An expression to represent the null value.
  */
 class NullExp extends AExp {
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
-		return NullValue.VALUE;
-	}
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+    return NullValue.VALUE;
+  }
 }
 
 /**
  * An expression to represent a lack of value.
  */
 class VoidExp extends AExp {
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
-		return VoidValue.VALUE;
-	}
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+    return VoidValue.VALUE;
+  }
 }
 
 /**
@@ -890,47 +890,47 @@ class VoidExp extends AExp {
  */
 class RegisterExp extends AExp {
 
-	/**
-	 * The name of the register.
-	 */
-	public final String register;
+  /**
+   * The name of the register.
+   */
+  public final String register;
 
-	public RegisterExp(String register) {
-		this.register = register;
-	}
+  public RegisterExp(String register) {
+    this.register = register;
+  }
 
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
-		// Compute the address of the offset:
-		Addr a = fp.offset(register);
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+    // Compute the address of the offset:
+    Addr a = fp.offset(register);
 
-		// Look up the address in the store:
-		return store.get(a);
-	}
+    // Look up the address in the store:
+    return store.get(a);
+  }
 }
 
 /**
  * An expression representing a literal integer.
  */
 class IntExp extends AExp {
-	public final int value;
+  public final int value;
 
-	public IntExp(int value) {
-		this.value = value;
-	}
+  public IntExp(int value) {
+    this.value = value;
+  }
 
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
-		return new IntValue(value);
-	}
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+    return new IntValue(value);
+  }
 }
 
 /**
  * Static constants for primitive operations.
  */
 enum PrimOp {
-	ADD,
-	MUL,
-	SUB,
-	EQ
+  ADD,
+  MUL,
+  SUB,
+  EQ
 }
 
 /**
@@ -938,58 +938,58 @@ enum PrimOp {
  */
 class AtomicOpExp extends AExp {
 
-	/**
-	 * The operation.
-	 */
-	public final PrimOp op;
+  /**
+   * The operation.
+   */
+  public final PrimOp op;
 
-	/**
-	 * The arguments to this operation.
-	 */
-	public final AExp[] args;
+  /**
+   * The arguments to this operation.
+   */
+  public final AExp[] args;
 
-	public AtomicOpExp(PrimOp op, AExp[] args) {
-		this.op = op;
-		this.args = args;
-	}
+  public AtomicOpExp(PrimOp op, AExp[] args) {
+    this.op = op;
+    this.args = args;
+  }
 
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
 
-		// Dispatch on the type of the operation:
-		switch (op) {
+    // Dispatch on the type of the operation:
+    switch (op) {
 
-		case ADD:
-			// Evaluate and sum all arguments:
-			int sum = 0;
-			for (int i = 0; i < args.length; ++i) {
-				sum += args[i].eval(fp, store).toInt();
-			}
-			return new IntValue(sum);
+    case ADD:
+      // Evaluate and sum all arguments:
+      int sum = 0;
+      for (int i = 0; i < args.length; ++i) {
+        sum += args[i].eval(fp, store).toInt();
+      }
+      return new IntValue(sum);
 
-		case MUL:
-			// Evaluate and multiply all arguments:
-			int prod = 1;
-			for (int i = 0; i < args.length; ++i) {
-				prod *= args[i].eval(fp, store).toInt();
-			}
-			return new IntValue(prod);
+    case MUL:
+      // Evaluate and multiply all arguments:
+      int prod = 1;
+      for (int i = 0; i < args.length; ++i) {
+        prod *= args[i].eval(fp, store).toInt();
+      }
+      return new IntValue(prod);
 
-		case SUB:
-			// Subtract: arg[0] - arg[1]
-			int a = args[0].eval(fp, store).toInt();
-			int b = args[1].eval(fp, store).toInt();
-			return new IntValue(a - b);
+    case SUB:
+      // Subtract: arg[0] - arg[1]
+      int a = args[0].eval(fp, store).toInt();
+      int b = args[1].eval(fp, store).toInt();
+      return new IntValue(a - b);
 
-		case EQ:
-			// Check for equality: arg[0] == arg[1] ?
-			int x = args[0].eval(fp, store).toInt();
-			int y = args[1].eval(fp, store).toInt();
-			return Value.from(x == y);
+    case EQ:
+      // Check for equality: arg[0] == arg[1] ?
+      int x = args[0].eval(fp, store).toInt();
+      int y = args[1].eval(fp, store).toInt();
+      return Value.from(x == y);
 
-		default:
-			throw new RuntimeException("unhandled atomic op: " + op);
-		}
-	}
+    default:
+      throw new RuntimeException("unhandled atomic op: " + op);
+    }
+  }
 }
 
 /**
@@ -997,31 +997,31 @@ class AtomicOpExp extends AExp {
  */
 class InstanceOfExp extends AExp {
 
-	/**
-	 * The object whose type should be checked.
-	 */
-	public final AExp object;
+  /**
+   * The object whose type should be checked.
+   */
+  public final AExp object;
 
-	/**
-	 * The (super)type to check for.
-	 */
-	public final String className;
+  /**
+   * The (super)type to check for.
+   */
+  public final String className;
 
-	public InstanceOfExp(AExp object, String className) {
-		this.object = object;
-		this.className = className;
-	}
+  public InstanceOfExp(AExp object, String className) {
+    this.object = object;
+    this.className = className;
+  }
 
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
-		// Evaluate the object:
-		ObjectValue obj = (ObjectValue) object.eval(fp, store);
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+    // Evaluate the object:
+    ObjectValue obj = (ObjectValue) object.eval(fp, store);
 
-		// The class of the object:
-		ClassDef classs = ClassDef.forName(obj.className);
+    // The class of the object:
+    ClassDef classs = ClassDef.forName(obj.className);
 
-		// Create a boolean with the result:
-		return Value.from(classs.isInstanceOf(className));
-	}
+    // Create a boolean with the result:
+    return Value.from(classs.isInstanceOf(className));
+  }
 }
 
 /**
@@ -1032,31 +1032,31 @@ class InstanceOfExp extends AExp {
  */
 class FieldExp extends AExp {
 
-	/**
-	 * The object with the field.
-	 */
-	public final AExp object;
+  /**
+   * The object with the field.
+   */
+  public final AExp object;
 
-	/**
-	 * The name of the field.
-	 */
-	public final String field;
+  /**
+   * The name of the field.
+   */
+  public final String field;
 
-	public FieldExp(AExp object, String field) {
-		this.object = object;
-		this.field = field;
-	}
+  public FieldExp(AExp object, String field) {
+    this.object = object;
+    this.field = field;
+  }
 
-	Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
+  Value eval(FramePointer fp, ImmutableMap<Addr, Value> store) {
 
-		// Evaluate the object:
-		ObjectValue op = (ObjectValue) object.eval(fp, store);
+    // Evaluate the object:
+    ObjectValue op = (ObjectValue) object.eval(fp, store);
 
-		// Compute the address of the field:
-		Addr fieldAddr = op.offset(field);
+    // Compute the address of the field:
+    Addr fieldAddr = op.offset(field);
 
-		return store.get(fieldAddr);
-	}
+    return store.get(fieldAddr);
+  }
 }
 
 /* Semantic domains. */
@@ -1066,35 +1066,35 @@ class FieldExp extends AExp {
  */
 abstract class Pointer {
 
-	/**
-	 * The internal value of the pointer.
-	 */
-	final long value;
+  /**
+   * The internal value of the pointer.
+   */
+  final long value;
 
-	protected Pointer() {
-		this.value = ++maxPointer;
-	}
+  protected Pointer() {
+    this.value = ++maxPointer;
+  }
 
-	private static long maxPointer = 0;
+  private static long maxPointer = 0;
 
-	/**
-	 * An ordering on pointers.
-	 */
-	public static final Comparator<Pointer> ordering = new Comparator<Pointer>() {
-		public int compare(Pointer p1, Pointer p2) {
-			if (p1.value < p2.value)
-				return -1;
-			else if (p2.value < p1.value)
-				return 1;
-			else
-				return 0;
-		}
-	};
+  /**
+   * An ordering on pointers.
+   */
+  public static final Comparator<Pointer> ordering = new Comparator<Pointer>() {
+    public int compare(Pointer p1, Pointer p2) {
+      if (p1.value < p2.value)
+        return -1;
+      else if (p2.value < p1.value)
+        return 1;
+      else
+        return 0;
+    }
+  };
 
-	/**
-	 * Calculates an offset address from this pointer.
-	 */
-	public abstract Addr offset(String name);
+  /**
+   * Calculates an offset address from this pointer.
+   */
+  public abstract Addr offset(String name);
 }
 
 /**
@@ -1102,24 +1102,24 @@ abstract class Pointer {
  * offsets from these pointers.
  */
 class FramePointer extends Pointer {
-	public FramePointer() {
-		super();
-	}
+  public FramePointer() {
+    super();
+  }
 
-	/**
-	 * Allocates a new frame pointer, as in when a new procedure is called.
-	 */
-	public FramePointer push() {
-		return new FramePointer();
-	}
+  /**
+   * Allocates a new frame pointer, as in when a new procedure is called.
+   */
+  public FramePointer push() {
+    return new FramePointer();
+  }
 
-	/**
-	 * Computes an abstract offset from this pointer, given the name of a register
-	 * (a local variable).
-	 */
-	public Addr offset(String register) {
-		return new FrameAddr(this, register);
-	}
+  /**
+   * Computes an abstract offset from this pointer, given the name of a register
+   * (a local variable).
+   */
+  public Addr offset(String register) {
+    return new FrameAddr(this, register);
+  }
 }
 
 /**
@@ -1128,16 +1128,16 @@ class FramePointer extends Pointer {
  */
 class ObjectPointer extends Pointer {
 
-	public ObjectPointer() {
-		super();
-	}
+  public ObjectPointer() {
+    super();
+  }
 
-	/**
-	 * Computes an abstract offset from this pointer, given the name of the field.
-	 */
-	public Addr offset(String fieldName) {
-		return new FieldAddr(this, fieldName);
-	}
+  /**
+   * Computes an abstract offset from this pointer, given the name of the field.
+   */
+  public Addr offset(String fieldName) {
+    return new FieldAddr(this, fieldName);
+  }
 
 }
 
@@ -1147,51 +1147,51 @@ class ObjectPointer extends Pointer {
  */
 abstract class OffsetAddr extends Addr {
 
-	/**
-	 * The base pointer.
-	 */
-	public final Pointer pointer;
+  /**
+   * The base pointer.
+   */
+  public final Pointer pointer;
 
-	/**
-	 * The abstract offset.
-	 */
-	public final String offset;
+  /**
+   * The abstract offset.
+   */
+  public final String offset;
 
-	public OffsetAddr(Pointer pointer, String offset) {
-		this.pointer = pointer;
-		this.offset = offset;
-	}
+  public OffsetAddr(Pointer pointer, String offset) {
+    this.pointer = pointer;
+    this.offset = offset;
+  }
 
-	/**
-	 * An ordering on offset addresses.
-	 */
-	public static final Comparator<OffsetAddr> ordering = new Comparator<OffsetAddr>() {
-		public int compare(OffsetAddr oa1, OffsetAddr oa2) {
-			if (oa1.pointer.value < oa2.pointer.value)
-				return -1;
-			if (oa2.pointer.value > oa1.pointer.value)
-				return 1;
-			return oa1.offset.compareTo(oa2.offset);
-		}
-	};
+  /**
+   * An ordering on offset addresses.
+   */
+  public static final Comparator<OffsetAddr> ordering = new Comparator<OffsetAddr>() {
+    public int compare(OffsetAddr oa1, OffsetAddr oa2) {
+      if (oa1.pointer.value < oa2.pointer.value)
+        return -1;
+      if (oa2.pointer.value > oa1.pointer.value)
+        return 1;
+      return oa1.offset.compareTo(oa2.offset);
+    }
+  };
 }
 
 /**
  * A frame address is an offset address in the stack.
  */
 class FrameAddr extends OffsetAddr {
-	public FrameAddr(FramePointer fp, String offset) {
-		super(fp, offset);
-	}
+  public FrameAddr(FramePointer fp, String offset) {
+    super(fp, offset);
+  }
 }
 
 /**
  * A field address is an offset address in the heap.
  */
 class FieldAddr extends OffsetAddr {
-	public FieldAddr(ObjectPointer op, String field) {
-		super(op, field);
-	}
+  public FieldAddr(ObjectPointer op, String field) {
+    super(op, field);
+  }
 }
 
 /**
@@ -1199,23 +1199,23 @@ class FieldAddr extends OffsetAddr {
  */
 abstract class Addr {
 
-	/**
-	 * An ordering on addresses.
-	 */
-	public static final Comparator<Addr> ordering = new Comparator<Addr>() {
-		public int compare(Addr a1, Addr a2) {
-			// Use reflection to compare on class names first:
-			int cmp = a1.getClass().toString().compareTo(a2.getClass().toString());
+  /**
+   * An ordering on addresses.
+   */
+  public static final Comparator<Addr> ordering = new Comparator<Addr>() {
+    public int compare(Addr a1, Addr a2) {
+      // Use reflection to compare on class names first:
+      int cmp = a1.getClass().toString().compareTo(a2.getClass().toString());
 
-			if (cmp != 0)
-				return cmp;
+      if (cmp != 0)
+        return cmp;
 
-			if (a1 instanceof OffsetAddr)
-				return OffsetAddr.ordering.compare((OffsetAddr) a1, (OffsetAddr) a2);
+      if (a1 instanceof OffsetAddr)
+        return OffsetAddr.ordering.compare((OffsetAddr) a1, (OffsetAddr) a2);
 
-			throw new RuntimeException("Cannot compare!");
-		}
-	};
+      throw new RuntimeException("Cannot compare!");
+    }
+  };
 }
 
 /**
@@ -1223,36 +1223,36 @@ abstract class Addr {
  */
 abstract class Value {
 
-	/**
-	 * Assuming the value is an object pointer, compute an offset.
-	 */
-	public Addr offset(String fieldName) {
-		throw new RuntimeException("cannot offset non-object pointer: " + this);
-	}
+  /**
+   * Assuming the value is an object pointer, compute an offset.
+   */
+  public Addr offset(String fieldName) {
+    throw new RuntimeException("cannot offset non-object pointer: " + this);
+  }
 
-	/**
-	 * Convert the value to a Boolean.
-	 */
-	public Boolean toBoolean() {
-		return this != FalseValue.VALUE;
-	}
+  /**
+   * Convert the value to a Boolean.
+   */
+  public Boolean toBoolean() {
+    return this != FalseValue.VALUE;
+  }
 
-	/**
-	 * Assuming the value is an integer, extract it.
-	 */
-	public int toInt() {
-		throw new RuntimeException("cannot convert to int: " + this);
-	}
+  /**
+   * Assuming the value is an integer, extract it.
+   */
+  public int toInt() {
+    throw new RuntimeException("cannot convert to int: " + this);
+  }
 
-	/**
-	 * Given a Boolean, returns an encapsulating value.
-	 */
-	public static final Value from(boolean value) {
-		if (value)
-			return TrueValue.VALUE;
-		else
-			return FalseValue.VALUE;
-	}
+  /**
+   * Given a Boolean, returns an encapsulating value.
+   */
+  public static final Value from(boolean value) {
+    if (value)
+      return TrueValue.VALUE;
+    else
+      return FalseValue.VALUE;
+  }
 }
 
 /**
@@ -1260,9 +1260,9 @@ abstract class Value {
  */
 class TrueValue extends Value {
 
-	private TrueValue() {}
+  private TrueValue() {}
 
-	public static final TrueValue VALUE = new TrueValue();
+  public static final TrueValue VALUE = new TrueValue();
 }
 
 /**
@@ -1270,9 +1270,9 @@ class TrueValue extends Value {
  */
 class FalseValue extends Value {
 
-	private FalseValue() {}
+  private FalseValue() {}
 
-	public static final FalseValue VALUE = new FalseValue();
+  public static final FalseValue VALUE = new FalseValue();
 }
 
 /**
@@ -1280,9 +1280,9 @@ class FalseValue extends Value {
  */
 class NullValue extends Value {
 
-	private NullValue() {}
+  private NullValue() {}
 
-	public static final NullValue VALUE = new NullValue();
+  public static final NullValue VALUE = new NullValue();
 }
 
 /**
@@ -1290,9 +1290,9 @@ class NullValue extends Value {
  */
 class VoidValue extends Value {
 
-	private VoidValue() {}
+  private VoidValue() {}
 
-	public static final VoidValue VALUE = new VoidValue();
+  public static final VoidValue VALUE = new VoidValue();
 }
 
 /**
@@ -1300,18 +1300,18 @@ class VoidValue extends Value {
  */
 class IntValue extends Value {
 
-	/**
-	 * The value of this integer.
-	 */
-	public final int value;
+  /**
+   * The value of this integer.
+   */
+  public final int value;
 
-	public IntValue(int value) {
-		this.value = value;
-	}
+  public IntValue(int value) {
+    this.value = value;
+  }
 
-	public int toInt() {
-		return value;
-	}
+  public int toInt() {
+    return value;
+  }
 
 }
 
@@ -1320,34 +1320,34 @@ class IntValue extends Value {
  */
 class ObjectValue extends Value {
 
-	/**
-	 * The base pointer for the object.
-	 */
-	public final ObjectPointer pointer;
+  /**
+   * The base pointer for the object.
+   */
+  public final ObjectPointer pointer;
 
-	/**
-	 * The class name for the object's type.
-	 */
-	public final String className;
+  /**
+   * The class name for the object's type.
+   */
+  public final String className;
 
-	public ObjectValue(String className, ObjectPointer pointer) {
-		this.className = className;
-		this.pointer = pointer;
-	}
+  public ObjectValue(String className, ObjectPointer pointer) {
+    this.className = className;
+    this.pointer = pointer;
+  }
 
-	/**
-	 * Checks whether this object is an instance of a class.
-	 */
-	public boolean isInstanceOf(String otherClassName) {
-		return ClassDef.forName(className).isInstanceOf(otherClassName);
-	}
+  /**
+   * Checks whether this object is an instance of a class.
+   */
+  public boolean isInstanceOf(String otherClassName) {
+    return ClassDef.forName(className).isInstanceOf(otherClassName);
+  }
 
-	/**
-	 * Properly computes an offset from the object pointer.
-	 */
-	public Addr offset(String fieldName) {
-		return pointer.offset(fieldName);
-	}
+  /**
+   * Properly computes an offset from the object pointer.
+   */
+  public Addr offset(String fieldName) {
+    return pointer.offset(fieldName);
+  }
 }
 
 /**
@@ -1358,10 +1358,10 @@ class ObjectValue extends Value {
  * This class contains utility methods.
  */
 class Store {
-	public static final ImmutableMap<Addr, Value> extend(ImmutableMap<Addr, Value> store, Addr addr,
-			Value value) {
-		return new ImmutableMap.Builder<Addr, Value>().putAll(store).put(addr, value).build();
-	}
+  public static final ImmutableMap<Addr, Value> extend(ImmutableMap<Addr, Value> store, Addr addr,
+      Value value) {
+    return new ImmutableMap.Builder<Addr, Value>().putAll(store).put(addr, value).build();
+  }
 }
 
 /* Continuations. */
@@ -1374,43 +1374,43 @@ class Store {
  */
 abstract class Kont {
 
-	/**
-	 * The continuation beneath this one.
-	 */
-	public final Kont next;
+  /**
+   * The continuation beneath this one.
+   */
+  public final Kont next;
 
-	public Kont(Kont next) {
-		this.next = next;
-	}
+  public Kont(Kont next) {
+    this.next = next;
+  }
 
-	/**
-	 * Applies this continuation to a return value.
-	 * 
-	 * This returns execution to the context in which the continuation was
-	 * created. It is effectively procedure return.
-	 * 
-	 * Any exception handlers in the way of the next return point are popped off.
-	 */
-	public abstract State apply(Value returnValue, ImmutableMap<Addr, Value> store);
+  /**
+   * Applies this continuation to a return value.
+   * 
+   * This returns execution to the context in which the continuation was
+   * created. It is effectively procedure return.
+   * 
+   * Any exception handlers in the way of the next return point are popped off.
+   */
+  public abstract State apply(Value returnValue, ImmutableMap<Addr, Value> store);
 
-	/**
-	 * Assuming the top of the stack is a handler, pop it off and return the next
-	 * continuation.
-	 */
-	public Kont popHandler() {
-		throw new RuntimeException("no handler to pop!");
-	}
+  /**
+   * Assuming the top of the stack is a handler, pop it off and return the next
+   * continuation.
+   */
+  public Kont popHandler() {
+    throw new RuntimeException("no handler to pop!");
+  }
 
-	/**
-	 * Invokes the top-most exception handler.
-	 * 
-	 * Any return points in the way are popped off.
-	 * 
-	 * It continues down the stack until it finds a handler's type that matches
-	 * the exception.
-	 */
-	public abstract State handle(ObjectValue exception, FramePointer fp,
-			ImmutableMap<Addr, Value> store);
+  /**
+   * Invokes the top-most exception handler.
+   * 
+   * Any return points in the way are popped off.
+   * 
+   * It continues down the stack until it finds a handler's type that matches
+   * the exception.
+   */
+  public abstract State handle(ObjectValue exception, FramePointer fp,
+      ImmutableMap<Addr, Value> store);
 }
 
 /**
@@ -1419,48 +1419,48 @@ abstract class Kont {
  */
 class HandlerKont extends Kont {
 
-	/**
-	 * The class name for the exception.
-	 */
-	public final String className;
+  /**
+   * The class name for the exception.
+   */
+  public final String className;
 
-	/**
-	 * The label to which the jump after catching the exception.
-	 */
-	public final String label;
+  /**
+   * The label to which the jump after catching the exception.
+   */
+  public final String label;
 
-	public HandlerKont(String className, String label, Kont kont) {
-		super(kont);
+  public HandlerKont(String className, String label, Kont kont) {
+    super(kont);
 
-		this.className = className;
-		this.label = label;
-	}
+    this.className = className;
+    this.label = label;
+  }
 
-	/**
-	 * Continuation handlers can't be applied for procedure return, so they go to
-	 * the next one.
-	 */
-	public State apply(Value returnValue, ImmutableMap<Addr, Value> store) {
-		return next.apply(returnValue, store);
-	}
+  /**
+   * Continuation handlers can't be applied for procedure return, so they go to
+   * the next one.
+   */
+  public State apply(Value returnValue, ImmutableMap<Addr, Value> store) {
+    return next.apply(returnValue, store);
+  }
 
-	/**
-	 * Returns the continuation underneath this handler.
-	 */
-	public Kont popHandler() {
-		return next;
-	}
+  /**
+   * Returns the continuation underneath this handler.
+   */
+  public Kont popHandler() {
+    return next;
+  }
 
-	public State handle(ObjectValue exception, FramePointer fp, ImmutableMap<Addr, Value> store) {
-		if (exception.isInstanceOf(className)) {
-			// Place the exception at (fp,"$ex")
-			ImmutableMap<Addr, Value> store_ = Store.extend(store, fp.offset("$ex"), exception);
-			return new State(Stmt.forLabel(label), fp, store_, next);
-		}
+  public State handle(ObjectValue exception, FramePointer fp, ImmutableMap<Addr, Value> store) {
+    if (exception.isInstanceOf(className)) {
+      // Place the exception at (fp,"$ex")
+      ImmutableMap<Addr, Value> store_ = Store.extend(store, fp.offset("$ex"), exception);
+      return new State(Stmt.forLabel(label), fp, store_, next);
+    }
 
-		else
-			return next.handle(exception, fp, store);
-	}
+    else
+      return next.handle(exception, fp, store);
+  }
 }
 
 /**
@@ -1468,69 +1468,69 @@ class HandlerKont extends Kont {
  */
 class AssignKont extends Kont {
 
-	/**
-	 * The register awaiting the result.
-	 */
-	public final String register;
+  /**
+   * The register awaiting the result.
+   */
+  public final String register;
 
-	/**
-	 * The statement at which to resume.
-	 */
-	public final Stmt stmt;
+  /**
+   * The statement at which to resume.
+   */
+  public final Stmt stmt;
 
-	/**
-	 * The frame pointer to restore.
-	 */
-	public final FramePointer fp;
+  /**
+   * The frame pointer to restore.
+   */
+  public final FramePointer fp;
 
-	public AssignKont(String register, Stmt stmt, FramePointer fp, Kont kont) {
-		super(kont);
-		this.register = register;
-		this.stmt = stmt;
-		this.fp = fp;
-	}
+  public AssignKont(String register, Stmt stmt, FramePointer fp, Kont kont) {
+    super(kont);
+    this.register = register;
+    this.stmt = stmt;
+    this.fp = fp;
+  }
 
-	/**
-	 * Performs the impending assignment and restores the context.
-	 */
-	public State apply(Value returnValue, ImmutableMap<Addr, Value> store) {
+  /**
+   * Performs the impending assignment and restores the context.
+   */
+  public State apply(Value returnValue, ImmutableMap<Addr, Value> store) {
 
-		// Place the result in the register:
-		ImmutableMap<Addr, Value> store_ = Store.extend(store, fp.offset(register), returnValue);
+    // Place the result in the register:
+    ImmutableMap<Addr, Value> store_ = Store.extend(store, fp.offset(register), returnValue);
 
-		// Restore the old context:
-		return new State(stmt, fp, store_, next);
-	}
+    // Restore the old context:
+    return new State(stmt, fp, store_, next);
+  }
 
-	/**
-	 * Skips down the stack to the next handler.
-	 */
-	public State handle(ObjectValue exception, FramePointer fp, ImmutableMap<Addr, Value> store) {
-		// Pick up the current pointer:
-		return next.handle(exception, this.fp, store);
-	}
+  /**
+   * Skips down the stack to the next handler.
+   */
+  public State handle(ObjectValue exception, FramePointer fp, ImmutableMap<Addr, Value> store) {
+    // Pick up the current pointer:
+    return next.handle(exception, this.fp, store);
+  }
 }
 
 /**
  * A halt continuation signals the end of the computation.
  */
 class HaltKont extends Kont {
-	private HaltKont() {
-		super(null);
-	}
+  private HaltKont() {
+    super(null);
+  }
 
-	/**
-	 * Terminates the computation with an exception.
-	 */
-	public State apply(Value returnValue, ImmutableMap<Addr, Value> store) {
-		throw new RuntimeException("terminated: " + returnValue);
-	}
+  /**
+   * Terminates the computation with an exception.
+   */
+  public State apply(Value returnValue, ImmutableMap<Addr, Value> store) {
+    throw new RuntimeException("terminated: " + returnValue);
+  }
 
-	public State handle(ObjectValue exception, FramePointer fp, ImmutableMap<Addr, Value> store) {
-		throw new RuntimeException("uncaught exception: " + exception);
-	}
+  public State handle(ObjectValue exception, FramePointer fp, ImmutableMap<Addr, Value> store) {
+    throw new RuntimeException("uncaught exception: " + exception);
+  }
 
-	public static final HaltKont HALT = new HaltKont();
+  public static final HaltKont HALT = new HaltKont();
 }
 
 /**
@@ -1538,91 +1538,91 @@ class HaltKont extends Kont {
  */
 class State {
 
-	/**
-	 * The "C" component: the current statement is the control string.
-	 */
-	public final Stmt stmt;
+  /**
+   * The "C" component: the current statement is the control string.
+   */
+  public final Stmt stmt;
 
-	/**
-	 * The "E" component: environments in this machine are flat: the address of
-	 * all ocal variables (registers) are computed as offsets from the frame
-	 * pointer.
-	 */
-	public final FramePointer fp;
+  /**
+   * The "E" component: environments in this machine are flat: the address of
+   * all ocal variables (registers) are computed as offsets from the frame
+   * pointer.
+   */
+  public final FramePointer fp;
 
-	/**
-	 * The "S" component: stores in this machine map address to values.
-	 */
-	public final ImmutableMap<Addr, Value> store;
+  /**
+   * The "S" component: stores in this machine map address to values.
+   */
+  public final ImmutableMap<Addr, Value> store;
 
-	/**
-	 * The "K" component: a stack of exception handlers and return points.
-	 */
-	public final Kont kont;
+  /**
+   * The "K" component: a stack of exception handlers and return points.
+   */
+  public final Kont kont;
 
-	public State(Stmt stmt, FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
-		this.stmt = stmt;
-		this.fp = fp;
-		this.store = store;
-		this.kont = kont;
-	}
+  public State(Stmt stmt, FramePointer fp, ImmutableMap<Addr, Value> store, Kont kont) {
+    this.stmt = stmt;
+    this.fp = fp;
+    this.store = store;
+    this.kont = kont;
+  }
 
-	/**
-	 * Returns the next state of execution.
-	 * 
-	 * @return the next state
-	 */
-	public State next() {
-		return stmt == null ? null : stmt.step(fp, store, kont);
-	}
+  /**
+   * Returns the next state of execution.
+   * 
+   * @return the next state
+   */
+  public State next() {
+    return stmt == null ? null : stmt.step(fp, store, kont);
+  }
 }
 
 class OOCESK {
 
-	/**
-	 * Executes the main method in the supplied class.
-	 * 
-	 * @param mainClass
-	 *          the class with a main method
-	 */
-	public static void execute(ClassDef mainClass) {
-		// Grab the main method:
-		MethodDef mainMethod = mainClass.lookupMethod("main");
+  /**
+   * Executes the main method in the supplied class.
+   * 
+   * @param mainClass
+   *          the class with a main method
+   */
+  public static void execute(ClassDef mainClass) {
+    // Grab the main method:
+    MethodDef mainMethod = mainClass.lookupMethod("main");
 
-		// Construct an object pointer for mainClass:
-		ObjectPointer op = new ObjectPointer();
+    // Construct an object pointer for mainClass:
+    ObjectPointer op = new ObjectPointer();
 
-		// Construct an object value for mainClass:
-		ObjectValue obj = new ObjectValue(mainClass.name, op);
+    // Construct an object value for mainClass:
+    ObjectValue obj = new ObjectValue(mainClass.name, op);
 
-		// Allocate an initial frame pointer:
-		FramePointer fp0 = new FramePointer();
+    // Allocate an initial frame pointer:
+    FramePointer fp0 = new FramePointer();
 
-		// Create an initial store:
-		ImmutableMap<Addr, Value> store0 =
-			new ImmutableSortedMap.Builder<Addr, Value>(Addr.ordering).build();
+    // Create an initial store:
+    ImmutableMap<Addr, Value> store0 =
+      new ImmutableSortedMap.Builder<Addr, Value>(Addr.ordering).build();
 
-		// Insert the initial object at register $this:
-		store0 = Store.extend(store0, fp0.offset("this"), obj);
+    // Insert the initial object at register $this:
+    store0 = Store.extend(store0, fp0.offset("this"), obj);
 
-		// Grab the halt continuation:
-		Kont halt = HaltKont.HALT;
+    // Grab the halt continuation:
+    Kont halt = HaltKont.HALT;
 
-		// Synthesize the initial state:
-		State state = new State(mainMethod.body, fp0, store0, halt);
+    // Synthesize the initial state:
+    State state = new State(mainMethod.body, fp0, store0, halt);
 
-		// Run until termination:
-		while (state != null) {
-			state = state.next();
-		}
-	}
+    // Run until termination:
+    while (state != null) {
+      state = state.next();
+    }
+  }
 
-	public static void main(String[] args) {
-		// If you want to run this interpreter,
-		// you should parse the classes into
-		// a collection of ClassDef's.
+  public static void main(String[] args) {
+    // If you want to run this interpreter,
+    // you should parse the classes into
+    // a collection of ClassDef's.
 
-		// Then call execute() on the class
-		// that contains the main method.
-	}
+    // Then call execute() on the class
+    // that contains the main method.
+  }
 }
